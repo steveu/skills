@@ -27,3 +27,6 @@ Restart Claude Code (or start a new session) to pick up new skills.
 - **tracer** — Decompose a feature or refactor idea into a tracked GitHub
   issue tree: a value-first parent issue plus AFK-grabbable vertical-slice
   sub-issues, linked via native GitHub sub-issues.
+- **grill-me** — Interview relentlessly about a plan or design until every
+  branch of the decision tree is resolved or explicitly deferred. Each
+  question arrives with a recommended answer and tradeoff.
