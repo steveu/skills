@@ -30,3 +30,11 @@ Restart Claude Code (or start a new session) to pick up new skills.
 - **grill-me** — Interview relentlessly about a plan or design until every
   branch of the decision tree is resolved or explicitly deferred. Each
   question arrives with a recommended answer and tradeoff.
+- **tdd** — Test-driven development with a red-green-refactor loop, vertical
+  slices, behaviour-not-implementation testing.
+- **improve-codebase-architecture** — Surface deepening opportunities and
+  architectural friction; consolidate shallow modules into deep ones.
+
+`tdd` and `improve-codebase-architecture` are adapted from
+[Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see
+`LICENSE-pocock`).
