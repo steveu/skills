@@ -37,9 +37,9 @@ Restart Claude Code (or start a new session) to pick up new skills.
 - **capture** — Append a thought to the personal Obsidian vault at
   `~/brain/vault/`. Defaults to today's daily note; matches existing
   vault conventions rather than imposing Zettelkasten structure.
-- **capture-cloud** — Same shape as `capture`, but writes via the GitHub
-  connector to `steveu/brain` for use in Claude.ai (web/mobile) where
-  there is no local filesystem. Upload as a skill in Claude.ai settings.
+- **capture-cloud** — Same shape as `capture`, but calls the brain-mcp
+  `capture` tool for use in Claude.ai (web/mobile) where there is no
+  local filesystem. Upload as a skill in Claude.ai settings.
 
 `tdd` and `improve-codebase-architecture` are adapted from
 [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see
