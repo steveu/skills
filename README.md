@@ -40,6 +40,10 @@ Restart Claude Code (or start a new session) to pick up new skills.
 - **capture-cloud** — Same shape as `capture`, but calls the brain-mcp
   `capture` tool for use in Claude.ai (web/mobile) where there is no
   local filesystem. Upload as a skill in Claude.ai settings.
+- **add-recipe** — Save a fully-developed recipe from the current
+  conversation to `~/brain/vault/Recipes/<title>.md` via the brain-mcp
+  `add_recipe` tool. Closed-set frontmatter (`type`, `source`, `health`),
+  metric units only, body matches the existing recipe convention.
 
 `tdd` and `improve-codebase-architecture` are adapted from
 [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see
