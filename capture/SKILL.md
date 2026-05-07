@@ -33,6 +33,7 @@ Read a recent daily note and any topic note you might be editing **before** writ
 
 - **British English** in prose.
 - **`[[Wiki-links]]`** for people, projects, places, and recurring activities. Run `ls ~/brain/vault ~/brain/vault/People` first so you know what already exists. It is fine to wiki-link a target that does not yet have a note (Obsidian shows these as ghost links) — but do **not** auto-create the target note. If the user clearly wants a new person/project page, ask.
+- **Scan recent conversation turns** for vault entities just created or referenced (a recipe saved via `add_recipe`, a note just edited, a person just added) and convert plain-prose mentions in the thought to `[[wiki-links]]`. Same rules as above — ghost links are fine, do not auto-create the target.
 - **Terse, paragraph-style** in daily notes — not bulleted with `-`. One thought per paragraph, blank line between. Match the existing length of recent entries.
 - **Frontmatter** only on typed notes (project, person, recipe). Daily notes have no frontmatter — do not add any.
 - **Voice**: preserve the user's wording. Do not summarise, expand, or "improve" the thought. Light copy-edit for grammar only if obviously needed.
