@@ -1,0 +1,6 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+"$repo_root/bin/build.sh" >/dev/null
+git add "$repo_root/dist"

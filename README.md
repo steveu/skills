@@ -48,3 +48,20 @@ Restart Claude Code (or start a new session) to pick up new skills.
 `tdd` and `improve-codebase-architecture` are adapted from
 [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see
 `LICENSE-pocock`).
+
+## Uploading to Claude.ai
+
+Claude.ai has no API for skill management — zip the skill folder and upload
+via the web UI. Pre-built zips live in `dist/`, one per skill. Rebuild:
+
+```sh
+./bin/build.sh
+```
+
+To rebuild automatically on every commit (so `dist/` is never stale), opt
+into the repo's git hooks once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
