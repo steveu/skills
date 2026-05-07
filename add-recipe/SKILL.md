@@ -1,6 +1,6 @@
 ---
 name: add-recipe
-description: Save a fully-developed recipe from the current conversation to the personal Obsidian vault by calling the brain-mcp `add_recipe` tool, which writes to `vault/Recipes/<title>.md`. Use when the user says "save this recipe", "save this recipe to brain", "add this recipe to brain", "save recipe to brain", or similar. Only fires when there is a clear, complete recipe in the conversation — refuses partial drafts and asks for the missing pieces.
+description: Save a fully-developed recipe from the current conversation to the personal Obsidian vault by calling the brain-mcp `add_recipe` tool, which writes a new note under `vault/Recipes/`. Use when the user says "save this recipe", "save this recipe to brain", "add this recipe to brain", "save recipe to brain", or similar. Only fires when there is a clear, complete recipe in the conversation — refuses partial drafts and asks for the missing pieces.
 ---
 
 # Add recipe
