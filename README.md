@@ -44,6 +44,11 @@ Restart Claude Code (or start a new session) to pick up new skills.
   conversation to `~/brain/vault/Recipes/<title>.md` via the brain-mcp
   `add_recipe` tool. Closed-set frontmatter (`type`, `source`, `health`),
   metric units only, body matches the existing recipe convention.
+- **footy** — Create a match note for the user's son's football teams
+  (Fulford FC, Fulford School) by calling the brain-mcp `create_match`
+  tool. Asks for opposition / date / team with sensible defaults; the
+  tool reads `vault/Templates/Match.md` and writes to
+  `vault/Matches/`. Body is left blank for post-match fill-in.
 
 `tdd` and `improve-codebase-architecture` are adapted from
 [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see
