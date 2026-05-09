@@ -57,7 +57,7 @@ Restart Claude Code (or start a new session) to pick up new skills.
 ## Uploading to Claude.ai
 
 Claude.ai has no API for skill management — zip the skill folder and upload
-via the web UI. Pre-built zips live in `dist/`, one per skill. Rebuild:
+via the web UI. `dist/` is gitignored; rebuild locally before each upload:
 
 ```sh
 ./bin/build.sh
@@ -69,4 +69,29 @@ into the repo's git hooks once per clone:
 ```sh
 git config core.hooksPath .githooks
 ```
+
+## Local config (`.env`)
+
+This repo is public, so any private values referenced by a `SKILL.md` (e.g.
+a Tailscale hostname) live in a gitignored `.env` at the repo root and are
+substituted into a fresh copy of `SKILL.md` at zip-build time. The committed
+SKILL.md keeps `${VAR}` placeholders; the `dist/<skill>.zip` you upload to
+claude.ai contains the substituted values.
+
+Setup:
+
+```sh
+cp .env.example .env
+# then edit .env to fill in real values
+./bin/build.sh
+```
+
+`bin/build.sh` sources `.env`, then for each skill copies the directory to a
+temp staging area, runs `${NAME}` substitution over `SKILL.md` using current
+env, and zips the staging copy. Unknown variables are left as-is (visible in
+the resulting zip — easy to spot if you forgot to populate `.env`).
+
+When adding a new skill that needs a private value, keep `${YOUR_VAR}` in
+the committed `SKILL.md` and add `YOUR_VAR=...` to `.env` (and document it
+in `.env.example` with a placeholder).
 

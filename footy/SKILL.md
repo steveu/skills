@@ -49,7 +49,21 @@ Once opposition and team are known, call `create_match` with:
 - `date`: `YYYY-MM-DD` if the user specified one, otherwise omit.
 - `pitch_type`, `pitch_condition`, `focus_area`, `importance`, `notes`: as extracted above. Omit any the user did not signal.
 
-The tool returns a confirmation like `created Matches/2026-05-09 — Fulford FC vs Heslington.md`. Echo that back in one short line. Do not embellish.
+The tool returns a confirmation like `created Matches/2026-05-09 — Fulford FC vs Heslington.md`. Echo that back in one short line, then on the next line print the **pitchside URL** so the user can tap stats during the match (see below). Do not embellish.
+
+## Pitchside URL
+
+After `create_match` returns, derive the slug from the filename stem (everything before `.md`) and print:
+
+```
+${PITCHSIDE_HOST}/pitchside/m/<slug>
+```
+
+**Slug rule** — lower-case the stem, collapse runs of non-`[a-z0-9]` characters into a single hyphen, trim leading/trailing hyphens. The em-dash, spaces, and any other punctuation all become hyphens.
+
+Example: `2026-05-09 — Fulford FC vs Heslington` → `2026-05-09-fulford-fc-vs-heslington` → `${PITCHSIDE_HOST}/pitchside/m/2026-05-09-fulford-fc-vs-heslington`.
+
+The URL is reachable only over Tailscale.
 
 ## Errors
 
