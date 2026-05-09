@@ -5,7 +5,7 @@ description: Create a match note in the personal Obsidian vault for the user's s
 
 # Footy
 
-Create a match note in the Obsidian vault by calling the **brain-mcp `create_match` tool**. The tool takes `opposition`, `team`, and an optional `date` (YYYY-MM-DD). It reads `vault/Templates/Match.md`, substitutes the date / opposition / team fields and the H1 placeholders, and writes the result to `vault/Matches/<date> — <team> vs <opposition>.md`. The skill's job is to collect the three arguments and call the tool — nothing else.
+Create a match note in the Obsidian vault by calling the **brain-mcp `create_match` tool**. The tool reads `vault/Templates/Match.md`, fills the date / opposition / team fields and any optional pre-match fields the user front-loaded, and writes the result to `vault/Matches/<date> — <team> vs <opposition>.md`. The skill's job is to collect the arguments — required ones via Q&A, optional ones by extracting from the user's prompt — and call the tool. Nothing else.
 
 ## Scope
 
@@ -17,13 +17,28 @@ This skill is for **one match note per invocation**. It is not for:
 
 ## Q&A flow
 
-Ask only what's needed. Skip questions whose answer is already in the user's request.
+Extract whatever's in the user's prompt. Ask only for what's missing-and-important. Don't batch — ask one question at a time.
 
-1. **Opposition** — required, freeform. Lightly title-case (`heslington` → `Heslington`). If the user already gave it in their message, don't re-ask.
-2. **Team** — `Fulford FC` or `Fulford School`. If the user's request mentions "school" or "club", infer without asking. If the request gives no signal, default to `Fulford FC`.
-3. **Date** — optional. If the user gave a relative phrase ("today", "tomorrow", "this Thursday", "last Saturday"), convert to `YYYY-MM-DD` (Europe/London) and pass it. If the user did not mention a date, **omit the argument** — the tool defaults to the next Saturday on or after today.
+1. **Opposition** — required. If not in the prompt, **ask**. Lightly title-case the answer (`heslington` → `Heslington`).
+2. **Team** — `Fulford FC` or `Fulford School`. If the user's request mentions "school" or "club", infer without asking. If the request gives no signal, default to `Fulford FC` — don't ask.
+3. **Focus area** — pre-match focus for the player ("using your eyes", "first touch"). If not in the prompt, **ask**: "what's the focus this week?" Fills both `focus_area:` frontmatter and the body `**Area:**` line. If the user shrugs or says "nothing in particular", omit and move on.
+4. **Date** — optional. If the user gave a relative phrase ("today", "tomorrow", "this Thursday", "last Saturday"), convert to `YYYY-MM-DD` (Europe/London) and pass it. If the user did not mention a date, **omit the argument** — the tool defaults to today (Europe/London). Only ask if the date signal is genuinely ambiguous (e.g. "the match" mid-week with no other hint).
 
-**Do not ask** about: result, minutes played, position, pitch condition, focus area, self-rating, importance, or event tallies. The template's existing defaults handle these (`importance: standard`, `minutes: full`, `position: CM`); the rest are filled in after the match by the user directly. The skill's job is the skeleton.
+**Never ask** about the other optional pre-match fields (`pitch_type`, `pitch_condition`, `importance`, `notes`) — only fill them when the user front-loads them. **Never ask** about post-match fields (result, minutes played, position, self-rating, event tallies) — the user fills those in directly after the match.
+
+## Other optional pre-match fields
+
+Extract these from the user's prompt when present. **Never ask for them** — if the user didn't front-load them, omit the argument and the template default stands.
+
+- **`pitch_type`** — surface type, e.g. `grass`, `3G`, `astroturf`. Template defaults to `grass`. Pass only if the user names a non-default surface; if they say "grass" explicitly, omit (it's the default — passing it is redundant).
+- **`pitch_condition`** — pre-match condition if known, e.g. `wet`, `frozen`, `muddy`. Usually omitted — conditions are normally observed on the day.
+- **`importance`** — one of `league` (default), `cup`, `cup-final`, `friendly`, `tournament`. **Inference rules:**
+    - "cup final" / "final" of a named cup → `cup-final`
+    - "cup" without "final", or a named cup match that isn't a final → `cup`
+    - "friendly" → `friendly`
+    - "tournament", "festival", "one-day" → `tournament`
+    - Anything else, or no signal → omit (template default `league` stands)
+- **`notes`** — free-form spillover for context that doesn't fit a frontmatter field: competition name, age group, stage, venue notes, anything else the user provided. Lands in the body `## Context` section. Don't editorialise — keep it close to what the user said. If the user gave nothing extra, omit.
 
 ## Calling the tool
 
@@ -32,6 +47,7 @@ Once opposition and team are known, call `create_match` with:
 - `opposition`: cleaned string (no slashes or null bytes; trimmed; lightly title-cased).
 - `team`: `"Fulford FC"` or `"Fulford School"` (verbatim, including the space and capitalisation).
 - `date`: `YYYY-MM-DD` if the user specified one, otherwise omit.
+- `pitch_type`, `pitch_condition`, `focus_area`, `importance`, `notes`: as extracted above. Omit any the user did not signal.
 
 The tool returns a confirmation like `created Matches/2026-05-09 — Fulford FC vs Heslington.md`. Echo that back in one short line. Do not embellish.
 
@@ -53,3 +69,6 @@ The tool returns a confirmation like `created Matches/2026-05-09 — Fulford FC 
 - Filling in `date` with `today` or `next saturday` literally — the tool wants `YYYY-MM-DD` or omitted.
 - Calling `create_match` more than once for the same prompt (e.g. "logging both Fulford FC and Fulford School matches") without explicitly confirming the team-by-team plan with the user first. The skill is one match per invocation.
 - Using `capture` for a match note, or `create_match` for a non-match thought.
+- Asking the user to fill in optional pre-match fields they didn't mention. Extract only what they front-loaded; omit the rest.
+- Inventing an `importance` value not in the enum. If the user's signal doesn't map to one of the five values, omit and let `league` stand — don't try to be clever.
+- Cramming everything spare into `notes`. If the prompt only had what the frontmatter consumed, omit `notes`. The `## Context` section should be empty when there's nothing to say.
