@@ -56,14 +56,12 @@ The tool returns a confirmation like `created Matches/2026-05-09 — Fulford FC 
 After `create_match` returns, derive the slug from the filename stem (everything before `.md`) and print:
 
 ```
-${PITCHSIDE_HOST}/pitchside/m/<slug>
+${PITCHSIDE_HOST}/m/<slug>
 ```
 
 **Slug rule** — lower-case the stem, collapse runs of non-`[a-z0-9]` characters into a single hyphen, trim leading/trailing hyphens. The em-dash, spaces, and any other punctuation all become hyphens.
 
-Example: `2026-05-09 — Fulford FC vs Heslington` → `2026-05-09-fulford-fc-vs-heslington` → `${PITCHSIDE_HOST}/pitchside/m/2026-05-09-fulford-fc-vs-heslington`.
-
-The URL is reachable only over Tailscale.
+Example: `2026-05-09 — Fulford FC vs Heslington` → `2026-05-09-fulford-fc-vs-heslington` → `${PITCHSIDE_HOST}/m/2026-05-09-fulford-fc-vs-heslington`.
 
 ## Errors
 
