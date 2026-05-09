@@ -42,6 +42,14 @@ for dir in */; do
   rm -f "dist/$name.zip"
   (cd "$tmp_root" && zip -rq "$repo_root/dist/$name.zip" "$name" \
     -x "*.DS_Store" "*/__MACOSX/*")
+
+  # Also mirror the substituted staging tree into dist/<name>/ so a symlink
+  # at ~/.claude/skills/<name> -> dist/<name>/ picks up the built copy in
+  # local Claude Code (placeholders resolved). dist/ is gitignored.
+  rm -rf "dist/$name"
+  mkdir -p "dist/$name"
+  (cd "$staging" && tar -cf - --exclude=.DS_Store .) | (cd "dist/$name" && tar -xf -)
+
   echo "dist/$name.zip"
   built=$((built + 1))
 done
