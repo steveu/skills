@@ -21,7 +21,7 @@ Extract whatever's in the user's prompt. Ask only for what's missing-and-importa
 
 1. **Opposition** — required. If not in the prompt, **ask**. Lightly title-case the answer (`heslington` → `Heslington`).
 2. **Team** — `Fulford FC` or `Fulford School`. If the user's request mentions "school" or "club", infer without asking. If the request gives no signal, default to `Fulford FC` — don't ask.
-3. **Focus area** — pre-match focus for the player ("using your eyes", "first touch"). If not in the prompt, **ask**: "what's the focus this week?" Fills both `focus_area:` frontmatter and the body `**Area:**` line. If the user shrugs or says "nothing in particular", omit and move on.
+3. **Focus area** — pre-match focus for the player ("using your eyes", "first touch"). If not in the prompt, **ask**: "what's the focus this week?" Fills both `focus_area:` frontmatter and the body's `## Focus from this match` section. If the user shrugs or says "nothing in particular", omit and move on.
 4. **Date** — optional. If the user gave a relative phrase ("today", "tomorrow", "this Thursday", "last Saturday"), convert to `YYYY-MM-DD` (Europe/London) and pass it. If the user did not mention a date, **omit the argument** — the tool defaults to today (Europe/London). Only ask if the date signal is genuinely ambiguous (e.g. "the match" mid-week with no other hint).
 
 **Never ask** about the other optional pre-match fields (`pitch_type`, `pitch_condition`, `importance`, `notes`) — only fill them when the user front-loads them. **Never ask** about post-match fields (result, minutes played, position, self-rating, event tallies) — the user fills those in directly after the match.
