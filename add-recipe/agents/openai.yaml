@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add Recipe"
+  short_description: "Save complete recipes to brain"
+  default_prompt: "Use $add-recipe to save this complete recipe to my brain vault."

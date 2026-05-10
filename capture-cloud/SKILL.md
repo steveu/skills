@@ -1,5 +1,5 @@
 ---
-name: capture
+name: capture-cloud
 description: Append a thought, observation, or idea to the personal Obsidian vault by calling the brain-mcp `capture` tool, which writes to today's daily note. Use when the user says "capture this", "save this thought", "save to brain", "remember this in brain", or otherwise asks to file something into their personal notes. NOT for code TODOs, bug tickets, or project work tracking — only personal vault content.
 ---
 

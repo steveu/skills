@@ -1,0 +1,4 @@
+interface:
+  display_name: "Footy"
+  short_description: "Create football match notes in brain"
+  default_prompt: "Use $footy to create a match note for this football match."

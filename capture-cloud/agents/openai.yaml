@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capture Cloud"
+  short_description: "Capture thoughts via brain MCP"
+  default_prompt: "Use $capture-cloud to save this thought using the brain MCP capture tool."

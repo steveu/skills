@@ -1,0 +1,4 @@
+interface:
+  display_name: "Capture"
+  short_description: "Append thoughts to the brain vault"
+  default_prompt: "Use $capture to save this thought to my brain vault."

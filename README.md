@@ -1,6 +1,6 @@
 # skills
 
-Personal Claude Code skills, shared across machines.
+Personal Claude Code and Codex skills, shared across machines.
 
 ## Install
 
@@ -21,6 +21,20 @@ ln -s ~/src/skills/tracer ~/.claude/skills/tracer
 ```
 
 Restart Claude Code (or start a new session) to pick up new skills.
+
+Codex loads skills from `~/.codex/skills/`. Symlink the same source
+directories there, excluding `dist/`:
+
+```sh
+for d in ~/skills/*(/); do
+  name=${d:t}
+  [[ $name == dist || $name == bin ]] && continue
+  [[ -f "$d/SKILL.md" ]] || continue
+  ln -sfn "$d" "$HOME/.codex/skills/$name"
+done
+```
+
+Restart Codex to pick up new or changed skills.
 
 ## Skills
 
@@ -94,4 +108,3 @@ the resulting zip — easy to spot if you forgot to populate `.env`).
 When adding a new skill that needs a private value, keep `${YOUR_VAR}` in
 the committed `SKILL.md` and add `YOUR_VAR=...` to `.env` (and document it
 in `.env.example` with a placeholder).
-

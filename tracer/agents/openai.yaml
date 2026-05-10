@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tracer"
+  short_description: "Turn plans into GitHub issue trees"
+  default_prompt: "Use $tracer to turn this feature idea into a GitHub issue tree."
