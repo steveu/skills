@@ -28,10 +28,30 @@ substitute() {
 }
 
 built=0
+skipped=0
+
+needs_build() {
+  local name="$1"
+  local zip_path="dist/$name.zip"
+
+  [[ ! -f "$zip_path" ]] && return 0
+  [[ ! -d "dist/$name" ]] && return 0
+  [[ -f .env && .env -nt "$zip_path" ]] && return 0
+  [[ bin/build.sh -nt "$zip_path" ]] && return 0
+
+  [[ -n "$(find "$name" -type f ! -name ".DS_Store" -newer "$zip_path" -print -quit)" ]]
+}
+
 for dir in */; do
   name="${dir%/}"
   [[ "$name" == "dist" || "$name" == "bin" ]] && continue
   [[ -f "$name/SKILL.md" ]] || continue
+
+  if ! needs_build "$name"; then
+    echo "skipped dist/$name.zip"
+    skipped=$((skipped + 1))
+    continue
+  fi
 
   staging="$tmp_root/$name"
   mkdir -p "$staging"
@@ -54,4 +74,4 @@ for dir in */; do
   built=$((built + 1))
 done
 
-echo "built $built skill zip(s)"
+echo "built $built skill zip(s), skipped $skipped"

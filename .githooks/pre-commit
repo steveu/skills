@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
-# Rebuild dist/<skill>.zip on every commit so a fresh, locally-substituted zip
-# is always sitting in dist/ ready to upload to claude.ai. dist/ itself is
-# gitignored — nothing here gets committed.
+# Refresh changed dist/<skill>.zip files on every commit so a fresh,
+# locally-substituted zip is sitting in dist/ ready to upload to claude.ai.
+# dist/ itself is gitignored — nothing here gets committed.
 set -euo pipefail
 
 repo_root="$(git rev-parse --show-toplevel)"

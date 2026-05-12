@@ -77,8 +77,8 @@ via the web UI. `dist/` is gitignored; rebuild locally before each upload:
 ./bin/build.sh
 ```
 
-To rebuild automatically on every commit (so `dist/` is never stale), opt
-into the repo's git hooks once per clone:
+To refresh changed skill zips automatically on every commit (so `dist/` is
+never stale), opt into the repo's git hooks once per clone:
 
 ```sh
 git config core.hooksPath .githooks
@@ -100,10 +100,12 @@ cp .env.example .env
 ./bin/build.sh
 ```
 
-`bin/build.sh` sources `.env`, then for each skill copies the directory to a
-temp staging area, runs `${NAME}` substitution over `SKILL.md` using current
-env, and zips the staging copy. Unknown variables are left as-is (visible in
-the resulting zip — easy to spot if you forgot to populate `.env`).
+`bin/build.sh` sources `.env`, skips skills whose existing `dist/<skill>.zip`
+and `dist/<skill>/` mirror are newer than their source files, then copies each
+changed skill directory to a temp staging area, runs `${NAME}` substitution
+over `SKILL.md` using current env, and zips the staging copy. Unknown variables
+are left as-is (visible in the resulting zip — easy to spot if you forgot to
+populate `.env`).
 
 When adding a new skill that needs a private value, keep `${YOUR_VAR}` in
 the committed `SKILL.md` and add `YOUR_VAR=...` to `.env` (and document it
