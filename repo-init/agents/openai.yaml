@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Init"
+  short_description: "Apply canonical issue labels to a GitHub repo"
+  default_prompt: "Use $repo-init to apply the canonical issue labels to this repo."
