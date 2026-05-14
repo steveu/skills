@@ -32,6 +32,7 @@ If none of these exist, that's fine — create them lazily, only when there's so
 
 When a term gets resolved during grilling, update `CONTEXT.md` immediately. Don't batch. Format: [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
 
+- `CONTEXT.md` is a glossary — nothing else. Not a spec, not a scratch pad, not a home for implementation decisions. If it's not a domain term, it doesn't go here.
 - Only domain terms — not general programming concepts (timeouts, error types, utilities).
 - If a user's term conflicts with the existing glossary, call it out: "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"
 - If multiple contexts exist, infer which one the topic belongs to. If unclear, ask.
