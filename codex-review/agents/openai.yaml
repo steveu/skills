@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex review"
+  short_description: "Run one round of codex review on a PR"
+  default_prompt: "Use $codex-review to run a codex review on this PR."

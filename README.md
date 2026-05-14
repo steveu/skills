@@ -58,6 +58,11 @@ Restart Codex to pick up new or changed skills.
   conversation to `~/brain/vault/Recipes/<title>.md` via the brain-mcp
   `add_recipe` tool. Closed-set frontmatter (`type`, `source`, `health`),
   metric units only, body matches the existing recipe convention.
+- **codex-review** — Run one round of `codex review` against an existing
+  GitHub PR via `~/ai/bin/codex-pr-review.sh`. Detects the obvious PR from
+  conversation context (or accepts an explicit PR ref), offers to check out
+  the PR's branch if you're elsewhere, posts the review to the PR, and
+  reports verdict + finding count + URL back in chat.
 - **footy** — Create a match note for the user's son's football teams
   (Fulford FC, Fulford School) by calling the brain-mcp `create_match`
   tool. Asks for opposition / date / team with sensible defaults; the
