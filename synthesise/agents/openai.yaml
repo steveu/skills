@@ -1,0 +1,4 @@
+interface:
+  display_name: "Synthesise"
+  short_description: "Promote daily-note threads into topic notes"
+  default_prompt: "Use $synthesise to run a synthesis pass over the recent daily notes."
