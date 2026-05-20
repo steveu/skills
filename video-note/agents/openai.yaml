@@ -1,0 +1,4 @@
+interface:
+  display_name: "Video note"
+  short_description: "Synthesise a YouTube video into a linked vault note"
+  default_prompt: "Use $video-note to turn this YouTube URL into a note in the brain vault."

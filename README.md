@@ -68,6 +68,13 @@ Restart Codex to pick up new or changed skills.
   tool. Asks for opposition / date / team with sensible defaults; the
   tool reads `vault/Templates/Match.md` and writes to
   `vault/Matches/`. Body is left blank for post-match fill-in.
+- **video-note** — Turn a YouTube URL into a durable, linked note in the
+  brain vault. A bundled `fetch-transcript.mjs` helper shells `yt-dlp`
+  (json3 captions, timestamps preserved) on the M4; the skill synthesises
+  a gist + timestamped key points, greps the vault for related notes and
+  proposes forward-only `[[wikilinks]]`, then writes one re-mineable note
+  to the private `Sources/` staging tier — gating title, worth-a-note call,
+  and links first. Curation-first: thin videos get downgraded or skipped.
 
 `tdd` and `improve-codebase-architecture` are adapted from
 [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see
