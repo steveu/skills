@@ -77,7 +77,12 @@ Legacy candidates (written before the `kind:` field existed) have no `- kind:` l
 
       Confident phrasing, one verdict, one-line why.
 
-   c. **Verify the destination exists.** Before recommending "apply":
+   c. **Re-validate against current state, then verify the destination.** Candidates can sit in the queue for days while the codebase, docs, and memory move on — a proposal that was novel when written may now be redundant or stale. The proposer dedups at *proposal* time; you dedup at *decision* time, which is the more authoritative check. Before recommending "apply", test the candidate against *present* state rather than trusting the proposer:
+      - **Already satisfied?** Read the live target and its canonical neighbours. For `agents-md`: the target section *and* relevant `docs/adr/*`, `docs/ops.md`, `CONTEXT.md` (whatever the project AGENTS.md flags canonical). For `memory`: the *body* of any same-topic memory file, not just the `MEMORY.md` index line. If the content — or its durable form — already lives there, recommend **reject** and cite the `file:line`.
+      - **Superseded?** If a later decision (in the codebase, an ADR, or a memory body) has overtaken the candidate, recommend **reject (superseded)** and name what replaced it.
+      - **Name collision / update?** If a `kind: memory` candidate's `name:` slug matches an existing memory file, or the body is framed as `**Update to [[slug]]**`, it is an *update*, not a new file — recommend **apply with edit (merge)**, describe the merge (which paragraph to replace or extend), and never create a second file under a colliding slug.
+
+      Then verify the destination exists:
       - **`kind: agents-md`** — check the target `AGENTS.md` exists. If not (project has no `AGENTS.md` yet), flag and ask whether to create it. On approval, create with a minimal skeleton (top-level `# AGENTS.md` + the new section), then run `~/ai/bin/ensure-claude-symlink.sh <dir>` to put the sibling `CLAUDE.md` symlink in place (see "Claude Code symlink" below).
       - **`kind: memory`** — check the destination memory dir exists. For user-scope: `~/.claude/projects/-Users-steveu-ai/memory/`. For project-scope: `~/.claude/projects/<encoded-cwd>/memory/` (sibling of the project's transcript dir). These dirs are created by `link-memory.sh` at session start, so the dir should already exist — if it doesn't, flag it.
 
@@ -123,13 +128,14 @@ Steps:
 1. Resolve the destination dir:
    - `scope: user` → `~/.claude/projects/-Users-steveu-ai/memory/`
    - `scope: project` → `~/.claude/projects/<encoded-current-cwd>/memory/` (sibling of the running transcript). On macOS, this resolves through a symlink to `~/ai/memory/personal/<project>/`; on Windows, `~/ai/memory/work/<project>/`. Write through the `~/.claude/projects/...` path either way — the symlink takes you to the right place.
-2. Filename: `<name>.md` where `<name>` is the kebab slug from the candidate. If a file with that name already exists, **stop and ask** — same name with different content is almost always a sign the classifier missed dedup; the user decides whether to merge, rename, or reject.
-3. Write the full file (frontmatter + body) with `Write`.
-4. Add an index entry to `MEMORY.md` in the same dir:
+2. Filename: `<name>.md` where `<name>` is the kebab slug from the candidate. **If a file with that name already exists, this is an update — do not write a second file.** Merge the candidate's delta into the existing file (the verdict for these is "apply with edit (merge)", agreed at step 4c): replace or extend the relevant paragraph(s), refresh the frontmatter `description` if the change moves it, and preserve the rest. Then refresh the file's `MEMORY.md` index line to match. Only fall back to **stop and ask** when the collision looks accidental — same slug, genuinely unrelated content — which signals the classifier mis-slugged it.
+3. (New file only.) Write the full file (frontmatter + body) with `Write`.
+4. (New file only.) Add an index entry to `MEMORY.md` in the same dir:
    - Format: `- [<H2 title from candidate>](<name>.md) — <description-from-candidate>`
    - Append to the end. If `MEMORY.md` doesn't exist, create it with a one-line header (`# MEMORY.md`) and the entry. Keep total file length under 200 lines (the auto-memory loader truncates beyond that) — if appending would push it over, surface and ask before adding.
 
-Confirmation line: `Wrote memory <name>.md to <dir>; indexed in MEMORY.md; removed from <queue>.`
+Confirmation line (new file): `Wrote memory <name>.md to <dir>; indexed in MEMORY.md; removed from <queue>.`
+Confirmation line (merge): `Merged delta into <name>.md; refreshed MEMORY.md index line; removed from <queue>.`
 
 ## Claude Code symlink (AGENTS.md only)
 
@@ -159,7 +165,7 @@ Remove the entire H2 section, including the H2 header line itself and all body c
 - Two candidates propose contradictory or duplicative content — surface and let the user pick.
 - An AGENTS.md candidate's target section doesn't exist in the target file and the candidate says "section: X" rather than "new" — flag the mismatch.
 - The proposed content would duplicate or substantially overlap with existing AGENTS.md / MEMORY.md content the candidate didn't catch — surface the overlap, recommend reject.
-- A memory candidate's `name:` collides with an existing file in the destination dir.
+- A memory candidate's `name:` collides with an existing file but the content is genuinely *unrelated* (a mis-slug, not an update) — the routine case of a same-topic collision is now a merge, handled at step 4c, not a stop.
 - The target file doesn't exist (AGENTS.md) and the user hasn't decided whether to create it.
 
 ## Anti-patterns
@@ -175,3 +181,5 @@ Remove the entire H2 section, including the H2 header line itself and all body c
 - Hand-rolling the symlink with raw `ln -s` from inside the skill. Use the script — it handles idempotency, the Windows symlink-mode export, and conflict detection in one place.
 - Writing a memory file without adding the `MEMORY.md` index entry. The index is what gets loaded into context at session start; without it, the memory file is invisible.
 - Generating memory frontmatter inconsistent with the candidate's metadata. The candidate is the source of truth for `name`, `description`, `type` — don't paraphrase or substitute.
+- Trusting the proposer's dedup blindly. The proposer dedups at proposal time; candidates go stale in the queue. Re-validate every candidate against *current* state (step 4c) before recommending apply — read ADRs, ops.md, and memory bodies, not just the index.
+- Writing a second memory file under a slug that already exists. A same-topic collision is a merge into the existing file, not a new file — only stop-and-ask when the content is genuinely unrelated (a mis-slug).
