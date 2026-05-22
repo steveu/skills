@@ -42,7 +42,7 @@ python3 route.py \
 - `--waypoints` is pipe-separated, **in walk order**; each item is a place name (geocoded via Nominatim) or a raw `lat,lon`. Prefer `lat,lon` for precision — geocoding a vague name ("X village") often lands wrong, so **verify any geocoded point** before trusting it (the engine prints what each name resolved to).
 - For a **loop**, repeat the start as the final waypoint.
 - It writes `<name>.gpx` and `<name>.html` to `--out-dir` and prints a JSON metrics block to stdout.
-- **OS Outdoor tiles** in the preview: set `OS_API_KEY` in the repo `.env` (Data Hub key) — else the preview falls back to OpenTopoMap. OS tiles are GB-only and optional; never put the key in this file.
+- **Map preview:** the `.html` renders with **OpenTopoMap** — no key, opens straight off disk, and covers walks outside GB. **OS Outdoor detail** (GB-only) is the map service's job, never route.py's: route.py no longer embeds an OS key in any page. The OS-detail map lives at the service (`trails.urmston.org`, or `http://127.0.0.1:<port>/<id>` locally), which holds the Data Hub key and proxies the tiles. `--tile-base /tiles` makes route.py emit key-less OS-via-proxy HTML for that service to serve — the CC local preview doesn't need it.
 
 ### Waypoint pins (markers in the app)
 
