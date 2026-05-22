@@ -75,6 +75,17 @@ Restart Codex to pick up new or changed skills.
   proposes forward-only `[[wikilinks]]`, then writes one re-mineable note
   to the private `Sources/` staging tier — gating title, worth-a-note call,
   and links first. Curation-first: thin videos get downgraded or skipped.
+- **walk-route** — Turn a public walk guide (or a list of landmarks) into a
+  clean, followable GPX on real OSM paths. A bundled stdlib `route.py` geocodes
+  named waypoints (Nominatim), routes them with BRouter, and reports
+  distance/ascent/retrace plus how much of the line is on roads-with-cars vs
+  paths. Emits named `<wpt>` pins (start, destination, landmarks) that map apps
+  render as labelled markers, with off-route landmarks marked but not routed
+  through. Renders an HTML preview (OS Outdoor if `OS_API_KEY` is set, else
+  OpenTopoMap) with a route on/off toggle. Signal-vs-renderer discipline: keep
+  the guide's deliberate roads, don't let routing optimise them away. Writes the
+  GPX to `~/brain/vault/Travel/` (Claude Code) or returns it as a download
+  (claude.ai) for offline use in OsmAnd.
 
 `tdd` and `improve-codebase-architecture` are adapted from
 [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see
