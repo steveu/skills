@@ -75,7 +75,7 @@ Restart Codex to pick up new or changed skills.
   proposes forward-only `[[wikilinks]]`, then writes one re-mineable note
   to the private `Sources/` staging tier — gating title, worth-a-note call,
   and links first. Curation-first: thin videos get downgraded or skipped.
-- **walk-route** — Turn a public walk guide (or a list of landmarks) into a
+- **trails** — Turn a public walk guide (or a list of landmarks) into a
   clean, followable GPX on real OSM paths. A bundled stdlib `route.py` geocodes
   named waypoints (Nominatim), routes them with BRouter, and reports
   distance/ascent/retrace plus how much of the line is on roads-with-cars vs

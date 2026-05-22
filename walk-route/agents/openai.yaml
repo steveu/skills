@@ -1,4 +1,0 @@
-interface:
-  display_name: "Walk route"
-  short_description: "Turn waypoints or a walk guide into a clean GPX on real paths"
-  default_prompt: "Use $walk-route to build a followable GPX route from these waypoints."

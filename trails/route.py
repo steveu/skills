@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""walk-route engine — turn waypoints into a clean BRouter/OSM walking route.
+"""trails engine — turn waypoints into a clean BRouter/OSM walking route.
 
 Stdlib-only (urllib) so it runs in a locked-down sandbox. Given an ordered list
 of waypoints (place names geocoded via Nominatim, or raw `lat,lon`), it routes
@@ -39,7 +39,7 @@ from pathlib import Path
 
 BROUTER = "https://brouter.de/brouter"
 NOMINATIM = "https://nominatim.openstreetmap.org/search"
-UA = "walk-route-skill/1.0 (personal walking-route generator)"
+UA = "trails-skill/1.0 (personal walking-route generator)"
 
 # highway= classes, split into car-bearing vs foot-only (for the road metric)
 CAR = {"motorway", "trunk", "primary", "secondary", "tertiary", "unclassified",
