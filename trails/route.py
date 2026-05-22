@@ -12,7 +12,7 @@ viewpoint); don't let routing optimise the signal away.
 
 Usage:
   route.py --waypoints "Catgill Farm|53.9742,-1.8942|Bolton Abbey" \
-           --name "Sat Loop" --out-dir /path [--profile hiking-beta] [--os-key KEY]
+           --name "Sat Loop" --out-dir /path [--profile hiking-beta] [--tile-base /tiles]
 
 Point grammar (in --waypoints and --pins):
   lat,lon                routed; no pin unless labelled
@@ -29,7 +29,6 @@ Prints a JSON metrics block to stdout; writes <name>.gpx and <name>.html to out-
 import argparse
 import json
 import math
-import os
 import re
 import sys
 import time
@@ -198,17 +197,21 @@ HTML = """<!DOCTYPE html>
 border-radius:6px;font:13px system-ui;box-shadow:0 1px 4px rgba(0,0,0,.3)}</style></head>
 <body><div class="info"><b>__TITLE__</b><br>__SUBTITLE__</div><div id="map"></div>
 <script>
-var pts = __PTS__, marks = __MARKS__, osKey = "__OSKEY__";
+var pts = __PTS__, marks = __MARKS__, tileBase = "__TILEBASE__";
 var bng = new L.Proj.CRS('EPSG:27700',
   '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 ' +
   '+ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs',
   {resolutions:[896,448,224,112,56,28,14,7,3.5,1.75], origin:[-238375.0,1376256.0]});
 var base, map;
-if (osKey) {
-  base = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Outdoor_27700/{z}/{x}/{y}.png?key='+osKey,
+if (tileBase) {
+  // OS Outdoor via the tile proxy: the proxy injects the OS key server-side, so
+  // no key is ever in this page. BNG CRS, served only through the map service.
+  base = L.tileLayer(tileBase + '/Outdoor_27700/{z}/{x}/{y}.png',
     {maxZoom:9,minZoom:0,attribution:'Contains OS data &copy; Crown copyright and database rights 2026'});
   map = L.map('map',{crs:bng,layers:[base],minZoom:0,maxZoom:9});
 } else {
+  // No proxy ⇒ OpenTopoMap: no key, works as a standalone file opened locally
+  // and covers walks outside GB (where OS has no tiles).
   base = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
     {maxZoom:17,attribution:'&copy; OpenTopoMap (CC-BY-SA)'});
   map = L.map('map',{layers:[base]});
@@ -273,11 +276,14 @@ def insert_wpts(gpx, rows):
     return gpx if idx == -1 else gpx[:idx] + block + gpx[idx:]
 
 
-def write_html(path, title, subtitle, pts, marks, os_key):
+def write_html(path, title, subtitle, pts, marks, tile_base=""):
+    # No OS key is ever written into the page. tile_base set ⇒ OS tiles via the
+    # proxy (key injected server-side); empty ⇒ OpenTopoMap. So the rendered HTML
+    # is always safe to serve to any browser.
     html = (HTML.replace("__TITLE__", title).replace("__SUBTITLE__", subtitle)
             .replace("__PTS__", json.dumps([[la, lo] for la, lo in pts]))
             .replace("__MARKS__", json.dumps(marks))
-            .replace("__OSKEY__", os_key or ""))
+            .replace("__TILEBASE__", tile_base or ""))
     path.write_text(html)
 
 
@@ -294,11 +300,16 @@ def main():
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--profile", default="hiking-beta",
                     help="BRouter profile (hiking-beta avoids busy roads; trekking tolerates them).")
-    ap.add_argument("--os-key", default="",
-                    help="OS Data Hub API key for Outdoor tiles (else $OS_API_KEY, else OpenTopoMap).")
+    ap.add_argument("--tile-base", default="",
+                    help="Relative base path for key-less proxied OS Outdoor tiles, e.g. "
+                         "/tiles. When set, the map references "
+                         "<tile-base>/Outdoor_27700/{z}/{x}/{y}.png and no key is written "
+                         "into the page (the map service injects it server-side). Empty "
+                         "(default) renders OpenTopoMap — a standalone, key-less page.")
     args = ap.parse_args()
 
-    os_key = args.os_key or os.environ.get("OS_API_KEY", "")
+    # Strip a trailing slash so <tile-base>/<layer>/... never doubles up.
+    tile_base = args.tile_base.rstrip("/")
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
 
@@ -338,7 +349,7 @@ def main():
     gpx_path.write_text(gpx)
     subtitle = f"{metrics['miles']} mi &middot; {ascent_m} m ascent &middot; {metrics['retrace_pct']}% retrace"
     marks = [{"ll": [la, lo], "label": name} for la, lo, name, _, _ in pin_rows]
-    write_html(html_path, args.name, subtitle, pts, marks, os_key)
+    write_html(html_path, args.name, subtitle, pts, marks, tile_base)
 
     metrics["gpx"] = str(gpx_path)
     metrics["html"] = str(html_path)
