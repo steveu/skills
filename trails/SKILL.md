@@ -1,9 +1,9 @@
 ---
-name: walk-route
-description: Turn a public walk guide — text description, a list of landmarks, an image, or a rough/partial GPX — into a clean, followable GPX route on real OSM paths, with a map preview and quality metrics. Normalises the input into ordered waypoints (geocoding names, or tracing the OSM path network with Overpass where names run out), routes them with BRouter, reports distance/ascent/retrace and how much of the line is on roads-with-cars vs paths, and writes a GPX — with named waypoint pins for start, landmarks and destination that map apps show as labelled markers — for offline phone use (OsmAnd). Gates the route shape before saving. Use when the user says "walk-route", "plan this walk", "make a GPX for this route", "build me a route from these waypoints", or shares a walk guide to turn into a followable track. Needs full network (BRouter/Nominatim) — runs in Claude Code, not the claude.ai chat sandbox; the claude.ai path is a cloud variant over a brain-mcp tool.
+name: trails
+description: Turn a public walk guide — text description, a list of landmarks, an image, or a rough/partial GPX — into a clean, followable GPX route on real OSM paths, with a map preview and quality metrics. Normalises the input into ordered waypoints (geocoding names, or tracing the OSM path network with Overpass where names run out), routes them with BRouter, reports distance/ascent/retrace and how much of the line is on roads-with-cars vs paths, and writes a GPX — with named waypoint pins for start, landmarks and destination that map apps show as labelled markers — for offline phone use (OsmAnd). Gates the route shape before saving. Use when the user says "trails", "plan this walk", "make a GPX for this route", "build me a route from these waypoints", or shares a walk guide to turn into a followable track. Needs full network (BRouter/Nominatim) — runs in Claude Code, not the claude.ai chat sandbox; the claude.ai path is a cloud variant over a brain-mcp tool.
 ---
 
-# Walk route
+# Trails
 
 Turn a walk — described by a public guide or a handful of named landmarks — into one clean GPX the user can follow offline on their phone. Route the waypoints onto real paths, show a map, surface the quality metrics, and only save once the shape is confirmed.
 
@@ -61,7 +61,7 @@ When the guide is a turn-by-turn and the middle has no geocodable names (open mo
 2. **Pull the path network** in the corridor between anchors from Overpass — tracks, paths, bridleways, footways, **with geometry**. Named ways are sparse on the moor, so you need the unnamed ones too:
 
    ```sh
-   curl -s -A "walk-route/1.0 (personal)" https://overpass-api.de/api/interpreter \
+   curl -s -A "trails/1.0 (personal)" https://overpass-api.de/api/interpreter \
      --data-urlencode 'data=[out:json][timeout:30];way["highway"~"track|path|bridleway|footway"](S,W,N,E);out geom;'
    ```
    A bare `curl` returns `406 Not Acceptable` — the `-A` User-Agent is required. Public Overpass is flaky; retry or use a mirror.
