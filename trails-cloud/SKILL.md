@@ -1,6 +1,6 @@
 ---
 name: trails-cloud
-description: Turn a public walk or trail-run guide — named landmarks, a photo of a guide, text turn-by-turn, coordinates, or a published GPX — into a clean, followable GPX on real OSM paths, by driving the brain-mcp `walk_route` and `save_route` tools (the engine runs on the Mac; the claude.ai sandbox can't reach BRouter/Nominatim). Normalises the input into the tool's ordered-waypoint grammar in the model, calls `walk_route` for metrics and a map URL, shows that preview, and files the GPX to the vault's `Travel/` via `save_route` only once the shape is approved. Use when, in claude.ai, the user says "plan this walk", "plan this run", "make a GPX for this route", "build me a route from these waypoints", or shares a walk/run guide to turn into a followable track. In Claude Code on the Mac use the `trails` skill instead — it bundles the engine and traces the OSM network with Overpass; this cloud variant defers sparse-terrain tracing and partial-GPX anchoring to it.
+description: Turn a public walk or trail-run guide — named landmarks, a photo of a guide, text turn-by-turn, coordinates, or a published GPX — into a clean, followable GPX on real OSM paths, by driving the brain-mcp `walk_route` and `save_route` tools (the engine runs server-side; the claude.ai sandbox can't reach BRouter/Nominatim). Normalises the input into the tool's ordered-waypoint grammar in the model, calls `walk_route` for metrics and a map URL, shows that preview, and files the GPX to the vault's `Travel/` via `save_route` only once the shape is approved. Use when, in claude.ai, the user says "plan this walk", "plan this run", "make a GPX for this route", "build me a route from these waypoints", or shares a walk/run guide to turn into a followable track.
 ---
 
 # Trails (cloud)
@@ -11,9 +11,9 @@ Turn a walk — a public guide or a handful of named landmarks — into one clea
 
 ## Why this drives a tool, not an engine
 
-The route engine needs full outbound network (BRouter, Nominatim) and runs on the Mac. The **claude.ai sandbox can't reach those services**, so this skill never routes locally — it **calls the brain-mcp `walk_route` tool**, which runs the same engine server-side and returns the metrics and a map URL. `save_route` then files the chosen draft into the vault. Your job here is the *adapter* — turn whatever the user gives you into the tool's waypoint grammar — plus the *gate*: show, confirm, then save.
+The route engine needs full outbound network (BRouter, Nominatim) and runs server-side. The **claude.ai sandbox can't reach those services**, so this skill never routes locally — it **calls the brain-mcp `walk_route` tool**, which runs the same engine server-side and returns the metrics and a map URL. `save_route` then files the chosen draft into the vault. Your job here is the *adapter* — turn whatever the user gives you into the tool's waypoint grammar — plus the *gate*: show, confirm, then save.
 
-This mirrors `capture` driving the brain-mcp `capture` tool. The Claude Code `trails` skill is the richer sibling: it bundles the engine, traces the OSM path network with Overpass over sparse terrain, and anchors a partially-right GPX where OSM is patchy. Those two need network and compute the sandbox doesn't have — so **defer them to `trails` on the Mac** rather than faking them here.
+Two things a full route engine can do — tracing the OSM path network with Overpass over sparse terrain, and anchoring a partially-right GPX where OSM is patchy — aren't reachable through the tool. **Don't fake them**; where a walk needs them, say so and stop.
 
 ## Inputs — the adapters live in the model
 
@@ -22,8 +22,8 @@ The signal arrives in different forms. Recognise which you have and normalise it
 - **Named landmarks → pass the names.** `walk_route` geocodes each via Nominatim. Works in well-mapped areas; **verify every resolved point** in the returned metrics before trusting it (the tool flags wild outliers, but a subtly-wrong town it won't).
 - **Explicit coordinates → pass `lat,lon`.** Prefer these for precision — geocoding a vague name often lands wrong.
 - **A photo / screenshot / sketch of a guide → read it, then fall through.** Extract the ordered landmarks and rough shape off the image, then pass them as names or coords. It's a signal to extract, not something to trace pixel-by-pixel.
-- **Text turn-by-turn → extract the ordered named points.** Pull the sequence of geocodable points (village, named lane, pub, named crag) into waypoints. Where the *middle* has no geocodable names (open moor, forest), `walk_route` will take the shortest line — usually a road — and skip the walk's character. That's the case the CC `trails` skill solves with Overpass tracing; **don't fake it here** — say so and offer to hand off to `trails` on the Mac.
-- **A published GPX → decimate to waypoints.** Read the file's coordinates and drop a handful of ordered `lat,lon` points (start, key turns, finish), then re-route. True *anchoring* — keeping verbatim geometry where OSM is patchy and the line sits off BRouter's graph — isn't available through the tool (it always re-routes); if a section is genuinely off-graph, flag it and defer to `trails`.
+- **Text turn-by-turn → extract the ordered named points.** Pull the sequence of geocodable points (village, named lane, pub, named crag) into waypoints. Where the *middle* has no geocodable names (open moor, forest), `walk_route` will take the shortest line — usually a road — and skip the walk's character. The tool can't trace the moor for you; **don't fake it** — say so and stop rather than passing waypoints that route a road through the middle.
+- **A published GPX → decimate to waypoints.** Read the file's coordinates and drop a handful of ordered `lat,lon` points (start, key turns, finish), then re-route. True *anchoring* — keeping verbatim geometry where OSM is patchy and the line sits off BRouter's graph — isn't available through the tool (it always re-routes); if a section is genuinely off-graph, flag it rather than claiming the line is faithful to the original.
 
 A real walk often mixes these — named ends, a few coords through the middle. Stay flexible; the through-line is *signal in → waypoints → `walk_route` → metrics + map, gated before `save_route`*.
 
@@ -80,7 +80,7 @@ Run the tool, then **show, ask one short question, adjust** — don't monologue.
 
 ## Output — where the GPX goes
 
-`save_route` files the GPX into the vault's `Travel/` folder on the Mac. It syncs to the phone via the normal vault sync; `Travel/` is shareable, and a public-walk GPX carries no PII. Name it clearly (`<Trip> - <Day> <Walk>.gpx`). On the phone the user follows it offline in **OsmAnd** (free, worldwide OSM, imports GPX). OS Maps is GB-only — don't recommend it for non-UK walks.
+`save_route` files the GPX into the vault's `Travel/` folder. It syncs to the phone via the normal vault sync; `Travel/` is shareable, and a public-walk GPX carries no PII. Name it clearly (`<Trip> - <Day> <Walk>.gpx`). On the phone the user follows it offline in **OsmAnd** (free, worldwide OSM, imports GPX). OS Maps is GB-only — don't recommend it for non-UK walks.
 
 ## When to stop and ask
 
@@ -88,7 +88,7 @@ Run the tool, then **show, ask one short question, adjust** — don't monologue.
 - The routed line diverges from the guide's described path (crosses where the guide doesn't, takes a different bank/junction) — stop and surface; the guide is the signal.
 - The metrics contradict the guide (distance off by a lot, a "riverside" walk full of road metres) — flag it rather than save.
 - The user wants to keep a road the router avoids (or vice-versa) — confirm intent; don't silently re-optimise.
-- The walk needs sparse-terrain tracing or genuine off-graph anchoring — say the cloud tool can't, and offer to hand off to the Claude Code `trails` skill on the Mac.
+- The walk needs sparse-terrain tracing or genuine off-graph anchoring — say the tool can't, and stop; don't route a road through the middle to fake it.
 - `walk_route`/`save_route` is unavailable or errors — relay it plainly; don't fabricate a track, a map URL, or a saved path.
 
 ## Anti-patterns
@@ -99,5 +99,5 @@ Run the tool, then **show, ask one short question, adjust** — don't monologue.
 - Claiming the route avoids roads / follows paths without citing the foot-vs-car metres the tool returned.
 - Trusting a geocoded place name without checking where it landed.
 - Calling `save_route` before the user has approved the shape, or with an id you didn't get back from `walk_route`.
-- Faking mode-3 tracing or partial-GPX anchoring instead of deferring to `trails` on the Mac.
+- Faking sparse-terrain tracing or off-graph anchoring the tool can't do — say so and stop instead.
 - Recommending OS Maps for an overseas walk (GB-only), or a subscription app when OsmAnd does the job free.
