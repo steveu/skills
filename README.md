@@ -48,12 +48,10 @@ Restart Codex to pick up new or changed skills.
   slices, behaviour-not-implementation testing.
 - **improve-codebase-architecture** — Surface deepening opportunities and
   architectural friction; consolidate shallow modules into deep ones.
-- **capture** — Append a thought to the personal Obsidian vault at
-  `~/brain/vault/`. Defaults to today's daily note; matches existing
-  vault conventions rather than imposing Zettelkasten structure.
-- **capture-cloud** — Same shape as `capture`, but calls the brain-mcp
-  `capture` tool for use in Claude.ai (web/mobile) where there is no
-  local filesystem. Upload as a skill in Claude.ai settings.
+- **capture** — Append a thought to the personal Obsidian vault by calling
+  the brain-mcp `capture` tool (writes today's daily note). One skill for
+  both Claude Code and Claude.ai; matches existing vault conventions rather
+  than imposing Zettelkasten structure.
 - **add-recipe** — Save a fully-developed recipe from the current
   conversation to `~/brain/vault/Recipes/<title>.md` via the brain-mcp
   `add_recipe` tool. Closed-set frontmatter (`type`, `source`, `health`),
@@ -84,8 +82,17 @@ Restart Codex to pick up new or changed skills.
   through. Renders an HTML preview (OS Outdoor if `OS_API_KEY` is set, else
   OpenTopoMap) with a route on/off toggle. Signal-vs-renderer discipline: keep
   the guide's deliberate roads, don't let routing optimise them away. Writes the
-  GPX to `~/brain/vault/Travel/` (Claude Code) or returns it as a download
-  (claude.ai) for offline use in OsmAnd.
+  GPX to `~/brain/vault/Travel/` for offline use in OsmAnd. Claude Code only
+  (needs full network for BRouter/Nominatim/Overpass); the claude.ai path is
+  `trails-cloud`.
+- **trails-cloud** — The claude.ai variant of `trails`. The chat sandbox can't
+  reach BRouter/Nominatim, so instead of bundling the engine it drives the
+  brain-mcp `walk_route` / `save_route` tools (engine runs on the Mac).
+  Normalises named landmarks, coords, an image, text turn-by-turn, or a published
+  GPX into the tool's waypoint grammar in the model, shows the returned metrics
+  and map URL, gates on approval, then files the GPX to `Travel/`. Defers
+  sparse-terrain Overpass tracing and partial-GPX anchoring to `trails` on the
+  Mac. No hostname in the skill — the tool returns the URL.
 
 `tdd` and `improve-codebase-architecture` are adapted from
 [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT, see
