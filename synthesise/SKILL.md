@@ -11,7 +11,7 @@ Promote recurring threads from root-level daily notes (`vault/YYYY-MM-DD.md`) in
 
 - **Yes:** read root-level daily notes, cluster fragments by topic, propose merges into existing topic notes, write pointers back into dailies.
 - **Yes:** propose a new topic note when a thread has no home — but only after asking where it should live.
-- **No:** restructuring existing topic notes (renaming sections, reordering, rewriting prose the user has already shaped).
+- **No:** restructuring existing topic notes for its own sake (renaming sections, reordering, rewriting prose the user has already shaped). Supersession is the exception: a fragment that contradicts existing target content rewrites the section it contradicts — see Phase 2c.
 - **No:** deleting or rewriting daily-note content. The pointer is the only change to a daily.
 - **No:** synthesising into `Recipes/` or `Templates/` (closed-shape folders with their own skills).
 - **No:** batching multiple topics in one invocation. One topic per pass; each gets its own approval.
@@ -57,12 +57,12 @@ b. **Locate the target.** Walk the directory map in `vault/AGENTS.md` looking fo
 
 c. **Categorise each fragment.** For each one, decide:
    - **New** — adds information not already in the target. Include in proposal.
-   - **Supersedes** — refines or overturns existing target content. Include with a note: "supersedes line N of target".
+   - **Supersedes** — refines or overturns existing target content. Include with a note: "supersedes line N of target". Supersession is the default on contradiction: the proposal rewrites and date-stamps the contradicted section in place — never append a new dated subsection beside content it overturns. Appending leaves the retired thesis reading as current, and downstream consumers (design prompts, repo docs) propagate it. A capture may carry an explicit SUPERSEDES flag naming what it retires — honour that as a direct instruction; without the flag, detecting the contradiction and proposing the rewrite is still the default.
    - **Already covered** — semantically present in the target. Skip and say so.
    - **Off-topic** — wiki-link matches but the surrounding sentence is about something else. Skip and say so.
 
 d. **Compose the proposal.** Produce two artefacts in chat, no writes:
-   - **Target diff** — unified-diff against the target note showing additions. Preserve the target's section structure; create new sections only when there's a category of content the target doesn't already have.
+   - **Target diff** — unified-diff against the target note showing additions and supersession rewrites. Preserve the target's section structure; create new sections only when there's a category of content the target doesn't already have. Rewritten sections carry a date stamp (e.g. "Rewritten YYYY-MM-DD; supersedes the serif/brass spec").
    - **Daily-note pointers** — for each contributing daily, the exact pointer line that will go at the top of the file: `→ Synthesised into [[<Topic>]] (<today>).` for whole-daily promotions, or `→ <subtopic> synthesised into [[<Topic>]] (<today>).` for partial promotions.
 
 e. **Wait for approval.** Accept blanket approve, approve with edits, or reject. Don't write anything until explicit go-ahead.
@@ -86,7 +86,7 @@ g. **Return to Phase 1** for the next topic (when invoked via walk-through). The
 - A fragment looks like it should split between two topics.
 - A fragment is work-related and the proposed target is in an allowlisted folder.
 - The target's section structure has no obvious home for new content — confirm before adding a new section.
-- A fragment supersedes existing target content materially — confirm the supersession rather than silently overwriting.
+- A fragment supersedes existing target content materially and carries no SUPERSEDES flag — confirm the supersession rather than silently overwriting. A flagged capture needs no extra confirm beyond the normal proposal approval.
 - More than one topic is plausible for a synthesis run.
 - A daily note already has a `→ Synthesised into [[<Topic>]]` pointer for the same topic — confirm whether this run is a re-synthesis (replace pointer's date) or whether the daily should be skipped (already promoted).
 
@@ -98,6 +98,7 @@ g. **Return to Phase 1** for the next topic (when invoked via walk-through). The
 - Synthesising multiple topics in one Phase 2 pass.
 - Queuing approved verdicts and writing the files in a batch at the end of the walk-through. Each approved topic's writes land before the next topic's triage starts.
 - Deleting or rewriting source fragments in dailies. The pointer is the only change.
+- Appending a dated subsection beside target content it contradicts. Supersession rewrites in place; the daily, not the target's layer history, is the record of how the thinking evolved.
 - Creating new topic notes without explicit confirmation of the folder.
 - Promoting partial fragments into allowlisted folders when the surrounding daily-note content is private.
 - Adding tags, sections, or frontmatter fields the target didn't already have.
